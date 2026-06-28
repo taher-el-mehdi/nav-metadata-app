@@ -20,14 +20,16 @@ public sealed class ConnectionDialog : Form
     {
         Dock = DockStyle.Fill,
         Font = AppFonts.UiNormal,
-        DropDownStyle = ComboBoxStyle.DropDown
+        DropDownStyle = ComboBoxStyle.DropDown,
+        Margin = new Padding(0, 10, 0, 10)
     };
 
     private readonly ComboBox _authCombo = new()
     {
         Dock = DockStyle.Fill,
         DropDownStyle = ComboBoxStyle.DropDownList,
-        Font = AppFonts.UiNormal
+        Font = AppFonts.UiNormal,
+        Margin = new Padding(0, 10, 0, 10)
     };
 
     private readonly TextBox _usernameInput = new()
@@ -35,7 +37,8 @@ public sealed class ConnectionDialog : Form
         Dock = DockStyle.Fill,
         Font = AppFonts.UiNormal,
         ReadOnly = true,
-        BackColor = SystemColors.Control
+        BackColor = SystemColors.Control,
+        Margin = new Padding(0, 10, 0, 10)
     };
 
     private readonly TextBox _passwordInput = new()
@@ -43,20 +46,22 @@ public sealed class ConnectionDialog : Form
         Dock = DockStyle.Fill,
         UseSystemPasswordChar = true,
         Enabled = false,
-        Font = AppFonts.UiNormal
+        Font = AppFonts.UiNormal,
+        Margin = new Padding(0, 10, 0, 10)
     };
 
     private readonly ComboBox _databaseCombo = new()
     {
-        Dock = DockStyle.Top,
+        Dock = DockStyle.Fill,
         Font = AppFonts.UiNormal,
         DropDownStyle = ComboBoxStyle.DropDown,
         AutoCompleteMode = AutoCompleteMode.SuggestAppend,
-        AutoCompleteSource = AutoCompleteSource.ListItems
+        AutoCompleteSource = AutoCompleteSource.ListItems,
+        MinimumSize = new Size(0, 28),
+        Margin = new Padding(0, 10, 0, 10)
     };
 
     private readonly Button _connectButton;
-    private readonly Button _refreshButton;
     private readonly Label _databaseStatusLabel;
 
     private bool _isLoading;
@@ -69,24 +74,14 @@ public sealed class ConnectionDialog : Form
 
         _databaseStatusLabel = new Label
         {
-            Text = "Enter server and authentication, then load databases.",
+            Text = string.Empty,
             Font = AppFonts.UiSmall,
             ForeColor = SystemColors.GrayText,
-            Dock = DockStyle.Top,
+            Dock = DockStyle.Fill,
             AutoSize = true,
             MaximumSize = new Size(900, 0),
-            Padding = new Padding(0, 4, 0, 8)
+            Padding = new Padding(0, 2, 0, 0)
         };
-
-        _refreshButton = new Button
-        {
-            Text = "Load databases",
-            Font = AppFonts.UiButton,
-            AutoSize = true,
-            MinimumSize = new Size(120, 30),
-            Margin = new Padding(0, 4, 0, 0)
-        };
-        _refreshButton.Click += async (_, _) => await LoadDatabasesAsync();
 
         _connectButton = new Button
         {
@@ -100,7 +95,12 @@ public sealed class ConnectionDialog : Form
 
         BuildUi();
         ApplyWindowsAuthState();
-        Shown += async (_, _) => await ApplySavedSettingsAsync();
+        Shown += async (_, _) =>
+        {
+            await ApplySavedSettingsAsync();
+            if (_databaseCombo.Items.Count == 0 && CanLoadDatabases())
+                await TryLoadDatabasesAsync();
+        };
     }
 
     /// <summary>Profile chosen by the user when the dialog closes with OK.</summary>
@@ -109,8 +109,8 @@ public sealed class ConnectionDialog : Form
     private void BuildUi()
     {
         Text = "Connect to Server";
-        Size = new Size(620, 420);
-        MinimumSize = new Size(520, 380);
+        Size = new Size(640, 520);
+        MinimumSize = new Size(540, 480);
         StartPosition = FormStartPosition.CenterParent;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
@@ -124,27 +124,30 @@ public sealed class ConnectionDialog : Form
 
         _authCombo.Items.AddRange(["Windows Authentication", "SQL Server Authentication"]);
         _authCombo.SelectedIndex = 0;
-        _authCombo.SelectedIndexChanged += (_, _) =>
-        {
-            ApplyWindowsAuthState();
-            ClearDatabaseList();
-        };
-
         _serverInput.Leave += async (_, _) => await TryLoadDatabasesAsync();
         _passwordInput.Leave += async (_, _) => await TryLoadDatabasesAsync();
         _usernameInput.Leave += async (_, _) => await TryLoadDatabasesAsync();
+        _authCombo.SelectedIndexChanged += async (_, _) =>
+        {
+            ApplyWindowsAuthState();
+            ClearDatabaseList();
+            await TryLoadDatabasesAsync();
+        };
 
         _databaseCombo.TextChanged += (_, _) => UpdateConnectButtonState();
         _databaseCombo.SelectedIndexChanged += (_, _) => UpdateConnectButtonState();
 
         var header = CreateHeader();
         var connectionPanel = CreateConnectionPanel();
-        var databasePanel = CreateDatabasePanel();
         var buttonBar = CreateButtonBar();
 
-        var body = new Panel { Dock = DockStyle.Fill, Padding = new Padding(16, 8, 16, 8) };
+        var body = new Panel
+        {
+            Dock = DockStyle.Fill,
+            Padding = new Padding(16, 8, 16, 12),
+            AutoScroll = true
+        };
         body.Controls.Add(buttonBar);
-        body.Controls.Add(databasePanel);
         body.Controls.Add(connectionPanel);
         body.Controls.Add(header);
 
@@ -206,15 +209,13 @@ public sealed class ConnectionDialog : Form
             AutoSize = true,
             AutoSizeMode = AutoSizeMode.GrowAndShrink,
             ColumnCount = 2,
-            RowCount = 4,
-            Padding = new Padding(8, 4, 8, 8)
+            RowCount = 6,
+            Padding = new Padding(8, 24, 8, 12)
         };
-        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 148));
+        layout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
+        for (var i = 0; i < 6; i++)
+            layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
         layout.Controls.Add(MakeFieldLabel("Server name:"), 0, 0);
         layout.Controls.Add(_serverInput, 1, 0);
@@ -224,44 +225,11 @@ public sealed class ConnectionDialog : Form
         layout.Controls.Add(_usernameInput, 1, 2);
         layout.Controls.Add(MakeFieldLabel("Password:"), 0, 3);
         layout.Controls.Add(_passwordInput, 1, 3);
+        layout.Controls.Add(MakeFieldLabel("Database:"), 0, 4);
+        layout.Controls.Add(_databaseCombo, 1, 4);
+        layout.Controls.Add(_databaseStatusLabel, 1, 5);
 
         return layout;
-    }
-
-    private Panel CreateDatabasePanel()
-    {
-        var panel = new Panel
-        {
-            Dock = DockStyle.Top,
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            Padding = new Padding(8, 0, 8, 4)
-        };
-
-        var dbHeader = new FlowLayoutPanel
-        {
-            Dock = DockStyle.Top,
-            AutoSize = true,
-            FlowDirection = FlowDirection.LeftToRight,
-            WrapContents = false,
-            Padding = new Padding(0, 0, 0, 2)
-        };
-        dbHeader.Controls.Add(new Label
-        {
-            Text = "Database:",
-            Font = AppFonts.UiBold,
-            AutoSize = true,
-            Padding = new Padding(0, 8, 12, 0)
-        });
-        dbHeader.Controls.Add(_refreshButton);
-
-        _databaseStatusLabel.Dock = DockStyle.Top;
-        _databaseStatusLabel.Padding = new Padding(0, 4, 0, 6);
-
-        panel.Controls.Add(_databaseCombo);
-        panel.Controls.Add(_databaseStatusLabel);
-        panel.Controls.Add(dbHeader);
-        return panel;
     }
 
     private void UpdateConnectButtonState()
@@ -304,9 +272,10 @@ public sealed class ConnectionDialog : Form
     {
         Text = text,
         Font = AppFonts.UiNormal,
-        Dock = DockStyle.Fill,
+        AutoSize = true,
+        Anchor = AnchorStyles.Left,
         TextAlign = ContentAlignment.MiddleLeft,
-        AutoEllipsis = false
+        Margin = new Padding(0, 10, 20, 10)
     };
 
     private void ApplyWindowsAuthState()
@@ -338,7 +307,7 @@ public sealed class ConnectionDialog : Form
         _databaseCombo.Items.Clear();
         _databaseCombo.Text = string.Empty;
         _connectButton.Enabled = false;
-        _databaseStatusLabel.Text = "Enter server and authentication, then load databases.";
+        _databaseStatusLabel.Text = string.Empty;
     }
 
     private bool CanLoadDatabases()
@@ -390,8 +359,7 @@ public sealed class ConnectionDialog : Form
         _databaseCombo.Items.Clear();
         _databaseCombo.Text = string.Empty;
         _connectButton.Enabled = false;
-        _refreshButton.Enabled = false;
-        _databaseStatusLabel.Text = "Loading databases…";
+        _databaseStatusLabel.Text = "Loading…";
         Cursor = Cursors.WaitCursor;
 
         try
@@ -412,7 +380,7 @@ public sealed class ConnectionDialog : Form
                 return;
             }
 
-            _databaseStatusLabel.Text = $"{_databaseCombo.Items.Count} database(s) — select a NAV database.";
+            _databaseStatusLabel.Text = string.Empty;
             _databaseCombo.SelectedIndex = 0;
             UpdateConnectButtonState();
         }
@@ -424,7 +392,6 @@ public sealed class ConnectionDialog : Form
         finally
         {
             _isLoading = false;
-            _refreshButton.Enabled = true;
             Cursor = Cursors.Default;
         }
     }
