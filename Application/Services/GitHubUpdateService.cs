@@ -114,7 +114,8 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
             : payload.HtmlUrl,
         DownloadUrl = payload.Assets?
             .Where(a => !string.IsNullOrWhiteSpace(a.BrowserDownloadUrl) && !string.IsNullOrWhiteSpace(a.Name))
-            .OrderByDescending(a => a.Name!.Contains("Setup", StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(a => a.Name!.StartsWith("NAVMetadata-Setup", StringComparison.OrdinalIgnoreCase))
+            .ThenByDescending(a => a.Name!.Contains("Setup", StringComparison.OrdinalIgnoreCase))
             .ThenByDescending(a => a.Name!.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
             .ThenByDescending(a => a.Name!.Contains("win-x64", StringComparison.OrdinalIgnoreCase))
             .Select(a => a.BrowserDownloadUrl)

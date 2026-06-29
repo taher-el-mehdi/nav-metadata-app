@@ -28,6 +28,7 @@ if (-not $versionMatch) {
     throw 'Could not read <Version> from NAVMetadata.UI.csproj'
 }
 $Version = $versionMatch.Matches[0].Groups[1].Value
+$InstallerFileName = "NAVMetadata-Setup-$Version.exe"
 
 $publishDir = Join-Path $Root 'artifacts\publish\win-x64'
 $installerDir = Join-Path $Root 'artifacts\installer'
@@ -77,10 +78,10 @@ if ($SkipInstaller) {
 Write-Host ''
 Write-Host 'Release artifacts:' -ForegroundColor Green
 Write-Host "  ZIP:       $zipPath"
-if (Test-Path (Join-Path $installerDir "NAVMetadata-Setup-$Version.exe")) {
-    Write-Host "  Installer: $(Join-Path $installerDir "NAVMetadata-Setup-$Version.exe")"
+if (Test-Path (Join-Path $installerDir $InstallerFileName)) {
+    Write-Host "  Installer: $(Join-Path $installerDir $InstallerFileName)"
 }
 Write-Host ''
 Write-Host 'Upload to GitHub Releases:' -ForegroundColor Green
-Write-Host "  1. NAVMetadata-Setup-$Version.exe  (primary download)"
+Write-Host "  1. $InstallerFileName  (primary download)"
 Write-Host "  2. NAVMetadata-v$Version-win-x64.zip (portable)"

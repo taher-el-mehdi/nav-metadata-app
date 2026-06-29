@@ -34,12 +34,13 @@ jobs:
         run: |
           $v = (Select-String -Path NAVMetadata.UI.csproj -Pattern '<Version>([^<]+)</Version>').Matches[0].Groups[1].Value
           echo "value=$v" >> $env:GITHUB_OUTPUT
+          echo "installer_file=NAVMetadata-Setup-$v.exe" >> $env:GITHUB_OUTPUT
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            artifacts/installer/NAVMetadata-Setup-${{ steps.version.outputs.value }}.exe
+            artifacts/installer/${{ steps.version.outputs.installer_file }}
             artifacts/NAVMetadata-v${{ steps.version.outputs.value }}-win-x64.zip
           generate_release_notes: true
         env:

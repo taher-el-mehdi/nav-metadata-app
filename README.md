@@ -29,32 +29,16 @@ Works with NAV databases that expose the standard `[Object]` and `[Object Metada
 
 Releases are available on GitHub:
 
-- **[NAV Metadata Setup (recommended)](https://github.com/taher-el-mehdi/nav-metadata/releases/latest)** — Windows installer (Inno Setup)
-- **[Portable ZIP](https://github.com/taher-el-mehdi/nav-metadata/releases/latest)** — unzip and run, no install
+- **[NAV Metadata Setup (recommended)](https://github.com/taher-el-mehdi/nav-metadata-app/releases/download/v1.0.0/NAVMetadata-Setup-1.0.0.exe)** — Windows installer (Inno Setup)
+- **[Portable ZIP](https://github.com/taher-el-mehdi/nav-metadata-app/releases/download/v1.0.0/NAVMetadata-v1.0.0-win-x64.zip)** — unzip and run, no install
 
 **Website:** [navmetadata.com](https://navmetadata.com/) for features, roadmap, and FAQ.
 
-## Build a release (installer + ZIP)
-
-**Prerequisites:** [.NET 10 SDK](https://dotnet.microsoft.com/download) and [Inno Setup 6](https://jrsoftware.org/isinfo.php)
-
-```powershell
-.\scripts\build-release.ps1
-```
-
-This will:
-
-1. `dotnet publish` — self-contained **win-x64** build (no separate .NET install required)
-2. Create `artifacts\NAVMetadata-v{version}-win-x64.zip`
-3. Build `artifacts\installer\NAVMetadata-Setup-{version}.exe`
-
-Upload both files to a [GitHub Release](https://github.com/taher-el-mehdi/nav-metadata/releases). Tag `v1.0.0` to trigger the automated workflow in `.github/workflows/release.yml`.
 
 ## Build from source (development)
-
 ```bash
-git clone https://github.com/taher-el-mehdi/nav-metadata.git
-cd nav-metadata
+git clone https://github.com/taher-el-mehdi/nav-metadata-app.git
+cd nav-metadata-app
 dotnet build -c Release
 dotnet run -c Release
 ```
@@ -71,6 +55,5 @@ dotnet run -c Release
 NAV Metadata does not collect analytics or send database content anywhere. The only optional network call is a GitHub Releases check for updates.
 
 ## License
-
 MIT © Taher el mehdi.
 

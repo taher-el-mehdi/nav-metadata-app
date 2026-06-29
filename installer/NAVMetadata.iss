@@ -9,8 +9,8 @@
 #define MyAppPublisher "Taher el mehdi"
 #define MyAppExeName "NAVMetadata.exe"
 #define MyAppURL "https://navmetadata.com"
-#define MyAppSupportURL "https://github.com/taher-el-mehdi/nav-metadata/issues"
-#define MyAppUpdatesURL "https://github.com/taher-el-mehdi/nav-metadata/releases"
+#define MyAppSupportURL "https://github.com/taher-el-mehdi/nav-metadata-app/issues"
+#define MyAppUpdatesURL "https://github.com/taher-el-mehdi/nav-metadata-app/releases"
 #define PublishDir "..\artifacts\publish\win-x64"
 #define MyAppIcon "..\Assets\app-icon.ico"
 
