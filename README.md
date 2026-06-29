@@ -29,9 +29,28 @@ Works with NAV databases that expose the standard `[Object]` and `[Object Metada
 
 Releases are available on GitHub:
 
-**[Download latest release](https://github.com/taher-el-mehdi/nav-metadata/releases/latest)**
+- **[NAV Metadata Setup (recommended)](https://github.com/taher-el-mehdi/nav-metadata/releases/latest)** — Windows installer (Inno Setup)
+- **[Portable ZIP](https://github.com/taher-el-mehdi/nav-metadata/releases/latest)** — unzip and run, no install
 
-## Build from source
+**Website:** [navmetadata.com](https://navmetadata.com/) for features, roadmap, and FAQ.
+
+## Build a release (installer + ZIP)
+
+**Prerequisites:** [.NET 10 SDK](https://dotnet.microsoft.com/download) and [Inno Setup 6](https://jrsoftware.org/isinfo.php)
+
+```powershell
+.\scripts\build-release.ps1
+```
+
+This will:
+
+1. `dotnet publish` — self-contained **win-x64** build (no separate .NET install required)
+2. Create `artifacts\NAVMetadata-v{version}-win-x64.zip`
+3. Build `artifacts\installer\NAVMetadata-Setup-{version}.exe`
+
+Upload both files to a [GitHub Release](https://github.com/taher-el-mehdi/nav-metadata/releases). Tag `v1.0.0` to trigger the automated workflow in `.github/workflows/release.yml`.
+
+## Build from source (development)
 
 ```bash
 git clone https://github.com/taher-el-mehdi/nav-metadata.git

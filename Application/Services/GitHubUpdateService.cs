@@ -112,7 +112,13 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
         ReleasePageUrl = string.IsNullOrWhiteSpace(payload.HtmlUrl)
             ? AppConstants.GitHubReleasesPageUrl
             : payload.HtmlUrl,
-        DownloadUrl = payload.Assets?.FirstOrDefault(a => !string.IsNullOrWhiteSpace(a.BrowserDownloadUrl))?.BrowserDownloadUrl
+        DownloadUrl = payload.Assets?
+            .Where(a => !string.IsNullOrWhiteSpace(a.BrowserDownloadUrl) && !string.IsNullOrWhiteSpace(a.Name))
+            .OrderByDescending(a => a.Name!.Contains("Setup", StringComparison.OrdinalIgnoreCase))
+            .ThenByDescending(a => a.Name!.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+            .ThenByDescending(a => a.Name!.Contains("win-x64", StringComparison.OrdinalIgnoreCase))
+            .Select(a => a.BrowserDownloadUrl)
+            .FirstOrDefault()
     };
 
     private sealed class GitHubReleaseResponse
@@ -132,6 +138,9 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
 
     private sealed class GitHubReleaseAsset
     {
+        [JsonPropertyName("name")]
+        public string? Name { get; set; }
+
         [JsonPropertyName("browser_download_url")]
         public string? BrowserDownloadUrl { get; set; }
     }
