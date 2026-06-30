@@ -111,10 +111,6 @@ public sealed class AboutDialog : Form
             Text =
                 $"""
                 {AppConstants.AppTagline}
-
-                {AppConstants.AppShortTagline}
-
-                Report bugs and request features on GitHub.
                 """,
             Font = AppFonts.UiSubtitle,
             ForeColor = Color.FromArgb(64, 64, 64),

@@ -16,7 +16,7 @@ public static class AppConstants
     public const string CopyrightNotice = "Copyright Taher el mehdi 2026";
 
     /// <summary>GitHub issue tracker for bug reports and feature requests.</summary>
-    public const string ReportIssueUrl = "https://github.com/taher-el-mehdi/nav-metadata-app/issues";
+    public const string ReportIssueUrl = "https://github.com/taher-el-mehdi/nav-metadata-app/issues/new";
 
     public const string GitHubOwner = "taher-el-mehdi";
     public const string GitHubRepo = "nav-metadata-app";
