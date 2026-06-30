@@ -32,8 +32,13 @@ Releases are available on GitHub:
 - **[NAV Metadata Setup (recommended)](https://github.com/taher-el-mehdi/nav-metadata-app/releases/download/v1.0.0/NAVMetadata-Setup-1.0.0.exe)** — Windows installer (Inno Setup)
 - **[Portable ZIP](https://github.com/taher-el-mehdi/nav-metadata-app/releases/download/v1.0.0/NAVMetadata-v1.0.0-win-x64.zip)** — unzip and run, no install
 
-**Website:** [navmetadata.com](https://navmetadata.com/) for features, roadmap, and FAQ.
+**Website:** [navmetadata.com](https://navmetadata.com/) for features and FAQ.
 
+## Roadmap & contributing
+
+Planned work lives in **[ROADMAP.md](ROADMAP.md)** — version milestones (v1.1 productivity, v1.2 compare, v1.3 export/docs, v2.0 analysis, v3.0 ecosystem), checklists, and contribution notes.
+
+Contributors: pick an unchecked item from the roadmap, [open an issue](https://github.com/taher-el-mehdi/nav-metadata-app/issues/new) to claim or discuss it, then submit a focused pull request.
 
 ## Build from source (development)
 ```bash
